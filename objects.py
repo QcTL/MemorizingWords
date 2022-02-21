@@ -1,6 +1,9 @@
+from tracemalloc import start
 import pygame
 import random
 import os
+
+
 class TextShow():
     def __init__(self,x,y, srcimageBkgrnd,srcimageDelete,scale,screen,OfftextX,OfftextY,complexity):
 
@@ -12,7 +15,7 @@ class TextShow():
 
         #Button:
         self.button = Button(x-35,y+9,srcimageDelete,scale,screen)
-
+        self.showingButton = True
         #Text
         self.screen = screen
         self.text = ""
@@ -21,14 +24,16 @@ class TextShow():
         self.x = OfftextX
         self.y = OfftextY
         self.complexity = complexity
-      
+
     def draw(self):
         self.screen.blit(self.imageNewCharBack,(self.imageNewCharrectBack.x, self.imageNewCharrectBack.y))
         text_surface = self.base_font.render(self.text,True,(0,0,0))
         self.screen.blit(text_surface,(self.imageNewCharrectBack.x+self.x,self.imageNewCharrectBack.y+self.y))
-        if self.button.draw():
-            self.regenerateText()
-    
+        
+        if self.showingButton:
+            if self.button.draw():
+                self.regenerateText()
+        
     def setText(self,text):
         self.text= text
 
@@ -36,6 +41,8 @@ class TextShow():
         word = getWord(self.complexity)
         self.setText(word)
 
+    def turnOffOnButton(self,newValue):
+        self.showingButton = newValue
 class Button():
     def __init__(self,x,y, image,scale,screen):
         self.imageReal = pygame.image.load(image).convert_alpha()
@@ -130,3 +137,22 @@ def getWord(complexity):
                 head = word[:len(word)-1]
                 #print(head)
         return head
+
+class TimeCountDown():
+
+    def __init__(self,nX,nY,startTime,screen):
+        self.nX = nX
+        self.nY = nY
+        self.startTime = startTime
+        self.screen = screen
+        self.Time = startTime
+        pygame.font.init()
+        self.base_font = pygame.font.Font("CALIBRI.TTF",35)
+        #TODO: Cahnge to a more pixelated font
+
+    def draw(self):
+        text_surface = self.base_font.render(str(self.Time),True,(255,255,255))
+        self.screen.blit(text_surface,(self.nX,self.nY))
+
+    def clockDown(self):
+        self.Time = self.Time - 1
