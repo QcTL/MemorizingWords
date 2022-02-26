@@ -13,24 +13,54 @@ currentPath = os.path.dirname(__file__)
 #t1 = objects.TextShow(100,100,currentPath+'/assets/TextShow.png',5,screen,19,18)
 #t1.setText("PatataBrabesSalades")
 wallText = objects.GroupText(3,3,50,50,59*5,16*5,screen,currentPath+'/assets/TextShow.png',currentPath+'/assets/TextDelete.png',5,SCALE)
-RerollButton =objects.RerollButton(700, 300,currentPath+'/assets/RerollButton.png',SCALE,screen,wallText)
-clockTimer = objects.TimeCountDown(500,500,60,screen)
+RerollButton = objects.RerollButton(625, 340,currentPath+'/assets/RerollButton.png',SCALE,screen,wallText)
+StartButton = objects.StartButton(750, 344,currentPath+'/assets/StrtButtn.png',SCALE,screen,wallText)
+CheckButton =objects.CheckButton(462,538,currentPath+'/assets/CheckBtn.png',SCALE,screen,wallText)
 
+clockTimer = objects.TimeCountDown(445,370,60,screen)
+backGround = objects.Image(0,0,currentPath+'/assets/Bkgnd_Ll.png',5,screen)
+
+
+inputText = objects.TextInput(55,535,currentPath+'/assets/EnterTxtAtri.png',5,screen)
 run = True
 
+base_font = pygame.font.Font(None,40)
 CLOCKDOWN = pygame.USEREVENT+1
 pygame.time.set_timer(CLOCKDOWN, 1000)
 
+wordTextInput = ''
+
 while run:
+    backGround.draw()
     wallText.draw()
     RerollButton.draw()
     clockTimer.draw()
-    #TODO:Create a background so the sprites don't sit one top of another
+    if CheckButton.draw(wordTextInput):
+        wordTextInput = ""
+    StartButton.draw()
+    inputText.draw()
+    
+    #Show text inputed;
+    text_surface2 = base_font.render(wordTextInput,True,(0,0,0))
+    screen.blit(text_surface2,(65,545))
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
         if event.type == CLOCKDOWN:
-            clockTimer.clockDown()  
+            if clockTimer.getTime() > 0:
+                 clockTimer.clockDown() 
+        ######## Input Text:
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                wordTextInput = wordTextInput[0:-1]
+            elif event.key == pygame.K_SPACE or event.key == 13:
+                ##Summit by enter
+                wallText.showIfExist(wordTextInput)
+                wordTextInput = ""
+            elif event.key != 96:
+                print(event.key)
+                wordTextInput += event.unicode
     pygame.display.update()
 
 pygame.quit()
