@@ -139,7 +139,7 @@ class StartButton():
 
 class RerollButton():
     
-    def __init__(self,x,y, image,scale,screen,groupText):
+    def __init__(self,x,y, image,scale,screen,groupText,selComplexity):
         self.imageReal = pygame.image.load(image).convert_alpha()
         width = self.imageReal.get_width()
         height = self.imageReal.get_height()
@@ -149,14 +149,16 @@ class RerollButton():
         self.pressed = False
         self.screen = screen
         self.lastImages = []
-
+        self.selComplexity = selComplexity
+        
+        
         self.groupText = groupText
     def draw(self):
         #Get mouse position
         pos = pygame.mouse.get_pos() 
         if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and not self.pressed:
             ## Restarts The game
-            self.groupText.reloadAll()
+            self.groupText.reloadAll(self.selComplexity.getDifficulty())
             self.groupText.changeAllVisible(True)
             self.pressed = True
         if pygame.mouse.get_pressed()[0] == 0:
@@ -183,10 +185,10 @@ class GroupText():
                 ts.setText(word)
                
                 self.matText[i].append(ts)
-    def reloadAll(self):
+    def reloadAll(self,complexity):
         for i in range(0,self.nY):   
             for j in range(0,self.nX):
-                word = getWord(self.complexity)
+                word = getWord(complexity)
                 self.matText[i][j].setText(word)
     def draw(self):
         for i in range(0,self.nY):      
@@ -218,7 +220,7 @@ class GroupText():
         self.matText[posX][posY].changeVisibility(newVisible)
 
 def getWord(complexity):
-        word = random.choice(open('ca.txt','r',encoding="utf-8").readlines())
+        word = random.choice(open('es.txt','r',encoding="utf-8").readlines())
         if '/' in word:
             head, sep, tail = word.partition('/')
             print(head+ " " + sep + " " + tail )
@@ -227,7 +229,7 @@ def getWord(complexity):
             print(head)
     
         while len(head) > complexity:
-            word = random.choice(open('ca.txt','r',encoding="utf-8").readlines())
+            word = random.choice(open('es.txt','r',encoding="utf-8").readlines())
             if '/' in word:
                 head, sep, tail = word.partition('/')
                 #print(head+ " " + sep + " " + tail )
@@ -284,3 +286,38 @@ class TextInput():
 
     def get_pressed(self):
         return self.pressed
+
+class DifficultySlider():
+    def __init__(self,x,y,srcimage,scale,screen):
+        self.ballChar = pygame.image.load(srcimage).convert_alpha()
+        self.ballNewChar = pygame.transform.scale(self.ballChar,(int(self.ballChar.get_width()*scale),int(self.ballChar.get_height()*scale)))
+        self.ballNewCharrect = self.ballNewChar.get_rect()
+        self.ballNewCharrect.topleft = (x,y) 
+        self.screen = screen
+        self.pressed = False
+        self.ballPos = 1
+        self.x = x
+        self.y = y
+        self.listPoints = [[-125,0], [-75,0],[-25,0],[+25,0],[+75,0],[+125,0]]
+    def draw(self):
+        #Get mouse position
+        pos = pygame.mouse.get_pos() 
+
+        if self.ballNewCharrect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
+            self.pressed = True
+
+        if self.pressed:
+            if((self.listPoints[self.ballPos][0]+self.x - pygame.mouse.get_pos()[0]) > 25 and self.ballPos > 0):
+                self.ballPos  = self.ballPos - 1
+            elif((self.listPoints[self.ballPos][0]+self.x - pygame.mouse.get_pos()[0]) < -25 and self.ballPos < 5):
+                self.ballPos  = self.ballPos + 1
+        
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.pressed = False
+        
+        self.ballNewCharrect.topleft = (self.listPoints[int(self.ballPos)][0] + self.x + -15, self.y - 16)
+        self.screen.blit(self.ballNewChar,(self.ballNewCharrect.x,self.ballNewCharrect.y))
+
+
+    def getDifficulty(self):
+        return self.ballPos + 4
