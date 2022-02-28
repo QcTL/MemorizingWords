@@ -17,7 +17,7 @@ wallText = objects.GroupText(3,3,50,50,59*5,16*5,screen,currentPath+'/assets/Tex
 StartButton = objects.StartButton(750, 344,currentPath+'/assets/StrtButtn.png',SCALE,screen,wallText)
 CheckButton =objects.CheckButton(462,538,currentPath+'/assets/CheckBtn.png',SCALE,screen,wallText)
 
-clockTimer = objects.TimeCountDown(445,370,60,screen)
+clockTimer = objects.TimeCountDown(450,380,60,screen)
 backGround = objects.Image(0,0,currentPath+'/assets/Bkgnd_Ll.png',5,screen)
 backGndDiffSel = objects.Image(0,0,currentPath+'/assets/Bkgnd_DiffSelector.png',5,screen)
 

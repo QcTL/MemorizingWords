@@ -27,7 +27,7 @@ class TextShow():
         self.screen = screen
         self.text = ""
         pygame.font.init()
-        self.base_font = pygame.font.Font("CALIBRI.TTF",35)
+        self.base_font = pygame.font.Font(None,35)
         self.x = OfftextX
         self.y = OfftextY
         self.complexity = complexity
@@ -267,7 +267,7 @@ class TimeCountDown():
         self.screen = screen
         self.Time = startTime
         pygame.font.init()
-        self.base_font = pygame.font.Font("CALIBRI.TTF",60)
+        self.base_font = pygame.font.Font(None,60)
         #TODO: Cahnge to a more pixelated font
 
     def draw(self):
