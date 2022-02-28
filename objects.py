@@ -6,7 +6,7 @@ import os
 
 
 class TextShow():
-    def __init__(self,x,y, srcimageBkgrnd,srcimageDelete,scale,screen,OfftextX,OfftextY,complexity):
+    def __init__(self,x,y, srcimageBkgrnd,srcimageDelete,srcimageCorrect,scale,screen,OfftextX,OfftextY,complexity):
 
         #BackGround
         self.imageCharBack = pygame.image.load(srcimageBkgrnd).convert_alpha()
@@ -17,6 +17,12 @@ class TextShow():
         #Button:
         self.button = Button(x-35,y+9,srcimageDelete,scale,screen)
         self.showingButton = True
+        #Correct
+        self.CorCharBack = pygame.image.load(srcimageCorrect).convert_alpha()
+        self.CorNewCharBack = pygame.transform.scale(self.CorCharBack,(int(self.CorCharBack.get_width()*scale),int(self.CorCharBack.get_height()*scale)))
+        self.CorNewCharrectBack = self.CorNewCharBack.get_rect()
+        self.CorNewCharrectBack.topleft = (x,y)
+        self.ShowCorrect = False
         #Text
         self.screen = screen
         self.text = ""
@@ -32,7 +38,10 @@ class TextShow():
         if self.TextVisible:
             text_surface = self.base_font.render(self.text,True,(0,0,0))
             self.screen.blit(text_surface,(self.imageNewCharrectBack.x+self.x,self.imageNewCharrectBack.y+self.y))
-        
+            if self.ShowCorrect:
+                self.screen.blit(self.CorNewCharBack,(self.CorNewCharrectBack.x,self.CorNewCharrectBack.y))
+
+
         if self.showingButton:
             if self.button.draw():
                 self.regenerateText()
@@ -46,12 +55,18 @@ class TextShow():
     def regenerateText(self):
         word = getWord(self.complexity)
         self.setText(word)
+        self.ShowCorrect = False
 
     def turnOffOnButton(self,newValue):
         self.showingButton = newValue
     
     def changeVisibility(self,newVis):
         self.TextVisible = newVis
+    
+    def setComplexity(self,complexity):
+        self.complexity = complexity
+    def setCorrect(self,correct):
+        self.ShowCorrect = correct
 
 class Image():
     def __init__(self,x,y, srcimageBkgrnd,scale,screen):
@@ -164,11 +179,11 @@ class RerollButton():
         if pygame.mouse.get_pressed()[0] == 0:
             self.pressed = False
         self.screen.blit(self.imageReal,(self.rect.x, self.rect.y))
-
+        return self.pressed
 
 class GroupText():
 
-    def __init__(self,nX,nY,iniSpaceX,iniSpaceY,sizeX,sizeY,screen,BackImage,DeleteImage,complexity,scale):
+    def __init__(self,nX,nY,iniSpaceX,iniSpaceY,sizeX,sizeY,screen,BackImage,DeleteImage,ShowImage,complexity,scale):
         self.matText = list(list())
         self.nX = nX
         self.nY = nY
@@ -178,7 +193,7 @@ class GroupText():
         for i in range(0,nY):
             self.matText.append(list())        
             for j in range(0,nX):
-                ts = TextShow(actX + sizeX*i,actY+sizeY*j,BackImage,DeleteImage,scale,screen,19,13,complexity)
+                ts = TextShow(actX + sizeX*i,actY+sizeY*j,BackImage,DeleteImage,ShowImage,scale,screen,19,13,complexity)
                 #Sanatize the text get form the dicc: 
 
                 word = getWord(self.complexity)
@@ -186,10 +201,13 @@ class GroupText():
                
                 self.matText[i].append(ts)
     def reloadAll(self,complexity):
+        self.complexity = complexity
         for i in range(0,self.nY):   
             for j in range(0,self.nX):
                 word = getWord(complexity)
+                self.matText[i][j].setComplexity(complexity)
                 self.matText[i][j].setText(word)
+                self.matText[i][j].setCorrect(False)
     def draw(self):
         for i in range(0,self.nY):      
             for j in range(0,self.nX):
@@ -199,6 +217,7 @@ class GroupText():
         for i in range(0,self.nY):      
             for j in range(0,self.nX):
                 self.matText[i][j].changeVisibility(newVis)
+                self.matText[i][j].setCorrect(False)
 
     def showIfExist(self, text):
         i = 0
@@ -208,6 +227,7 @@ class GroupText():
             while not found and j < self.nY:
                 if self.matText[i][j].getText() == text:
                     self.matText[i][j].changeVisibility(True)
+                    self.matText[i][j].setCorrect(True)
                     found = True
                 else:
                     j = j + 1
@@ -260,6 +280,8 @@ class TimeCountDown():
     def getTime(self):
         return self.Time
 
+    def setTime(self,time):
+        self.Time = time
 class TextInput():
 
     def __init__(self,x,y,srcimage,scale,screen):

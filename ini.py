@@ -12,7 +12,7 @@ currentPath = os.path.dirname(__file__)
 
 #t1 = objects.TextShow(100,100,currentPath+'/assets/TextShow.png',5,screen,19,18)
 #t1.setText("PatataBrabesSalades")
-wallText = objects.GroupText(3,3,50,50,59*5,16*5,screen,currentPath+'/assets/TextShow.png',currentPath+'/assets/TextDelete.png',5,SCALE)
+wallText = objects.GroupText(3,3,50,50,59*5,16*5,screen,currentPath+'/assets/TextShow.png',currentPath+'/assets/TextDelete.png',currentPath+'/assets/TextShowCorrect.png',5,SCALE)
 
 StartButton = objects.StartButton(750, 344,currentPath+'/assets/StrtButtn.png',SCALE,screen,wallText)
 CheckButton =objects.CheckButton(462,538,currentPath+'/assets/CheckBtn.png',SCALE,screen,wallText)
@@ -32,6 +32,7 @@ CLOCKDOWN = pygame.USEREVENT+1
 pygame.time.set_timer(CLOCKDOWN, 1000)
 
 wordTextInput = ''
+hasStarted = False
 
 while run:
     backGround.draw()
@@ -39,11 +40,16 @@ while run:
 
     sliderDiff.draw()
     wallText.draw()
-    RerollButton.draw()
     clockTimer.draw()
+    
+    if RerollButton.draw():
+        clockTimer.setTime(60)
+        hasStarted = False
     if CheckButton.draw(wordTextInput):
         wordTextInput = ""
-    StartButton.draw()
+    if StartButton.draw():
+        hasStarted = True
+    
     inputText.draw()
     
     #Show text inputed;
@@ -58,11 +64,13 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        if event.type == CLOCKDOWN:
+        if event.type == CLOCKDOWN and hasStarted:
             if clockTimer.getTime() > 0:
                  clockTimer.clockDown() 
+            else:
+                hasStarted = False
         ######## Input Text:
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.KEYDOWN and hasStarted:
             if event.key == pygame.K_BACKSPACE:
                 wordTextInput = wordTextInput[0:-1]
             elif event.key == pygame.K_SPACE or event.key == 13:
