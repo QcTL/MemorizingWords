@@ -21,7 +21,7 @@ clockTimer = objects.TimeCountDown(450,380,60,screen)
 backGround = objects.Image(0,0,currentPath+'/assets/Bkgnd_Ll.png',5,screen)
 backGndDiffSel = objects.Image(0,0,currentPath+'/assets/Bkgnd_DiffSelector.png',5,screen)
 
-sliderDiff = objects.DifficultySlider(200,366,currentPath+'/assets/BallSelect.png',5,screen)
+sliderDiff = objects.DifficultySlider(200,366,currentPath+'/assets/BallSelect.png',currentPath+'/assets/BallSelectFocus.png',5,screen)
 inputText = objects.TextInput(55,535,currentPath+'/assets/EnterTxtAtri.png',5,screen)
 
 RerollButton = objects.RerollButton(625, 340,currentPath+'/assets/RerollButton.png',SCALE,screen,wallText,sliderDiff)

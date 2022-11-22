@@ -276,26 +276,33 @@ class TextInput(Object):
         return self.pressed
 
 class DifficultySlider():
-    def __init__(self,x,y,srcimage,scale,screen):
-        self.ballChar = pygame.image.load(srcimage).convert_alpha()
-        self.ballNewChar = pygame.transform.scale(self.ballChar,(int(self.ballChar.get_width()*scale),int(self.ballChar.get_height()*scale)))
-        self.ballNewCharrect = self.ballNewChar.get_rect()
-        self.ballNewCharrect.topleft = (x,y) 
+    def __init__(self,x,y,srcimageNoFocus, srcimageFocus,scale,screen):
+        self.ballCharNF = pygame.image.load(srcimageNoFocus).convert_alpha()
+        self.ballCharF = pygame.image.load(srcimageFocus).convert_alpha()
+        self.ballNewCharNF = pygame.transform.scale(self.ballCharNF,(int(self.ballCharNF.get_width()*scale),int(self.ballCharNF.get_height()*scale)))
+        self.ballNewCharF = pygame.transform.scale(self.ballCharF,(int(self.ballCharF.get_width()*scale),int(self.ballCharF.get_height()*scale)))
+        
+        self.ballNewCharRect = self.ballNewCharNF.get_rect()
+        self.ballNewCharRect.topleft = (x,y) 
         self.screen = screen
         self.pressed = False
         self.ballPos = 1
         self.x = x
         self.y = y
         self.listPoints = [[-125,0], [-75,0],[-25,0],[+25,0],[+75,0],[+125,0]]
+    
     def draw(self):        
-        self.ballNewCharrect.topleft = (self.listPoints[int(self.ballPos)][0] + self.x + -15, self.y - 16)
-        self.screen.blit(self.ballNewChar,(self.ballNewCharrect.x,self.ballNewCharrect.y))
-
+        self.ballNewCharRect.topleft = (self.listPoints[int(self.ballPos)][0] + self.x + -15, self.y - 16)
+        
+        if self.pressed:
+            self.screen.blit(self.ballNewCharF,(self.ballNewCharRect.x,self.ballNewCharRect.y))
+        else:
+            self.screen.blit(self.ballNewCharNF,(self.ballNewCharRect.x,self.ballNewCharRect.y))
     def sliderAndChange(self):
         #Get mouse position
         pos = pygame.mouse.get_pos() 
         hasChanged = False;
-        if self.ballNewCharrect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
+        if self.ballNewCharRect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
             self.pressed = True
 
         if self.pressed:
