@@ -41,14 +41,20 @@ while run:
     wallText.draw()
     clockTimer.draw()
     RerollButton.draw()
+    CheckButton.draw()
+    StartButton.draw()
+    StartButton.draw()
+
     if RerollButton.ifPressed() or sliderDiff.sliderAndChange():
-        RerollButton.reroll();
+        RerollButton.bActive();
         clockTimer.setTime(60)
         hasStarted = False
         wordTextInput = ""
-    if CheckButton.draw(wordTextInput):
+    if CheckButton.ifPressed():
+        CheckButton.bActive(wordTextInput)
         wordTextInput = ""
-    if StartButton.draw():
+    if StartButton.ifPressed():
+        StartButton.bActive();
         hasStarted = True
     
     inputText.draw(wordTextInput)

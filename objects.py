@@ -19,6 +19,25 @@ class Object():
     def draw(self):
         self.screen.blit(self.imageReal,(self.rect.x, self.rect.y))
 
+class BasicButton(Object):
+    def __init__(self,x,y,image,scale,screen):
+        super().__init__(x, y, image, scale, screen)
+
+    def ifPressed(self):
+        pos = pygame.mouse.get_pos() 
+        if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and not self.pressed:
+            self.pressed = True
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.pressed = False
+        return self.pressed
+
+class Button(BasicButton):
+    def __init__(self,x,y, image,scale,screen):
+        super().__init__(x,y, image,scale,screen) 
+
+    def draw(self):
+        Object.draw(self);
+
 
 class TextShow():
     def __init__(self,x,y, srcimageBkgrnd,srcimageDelete,srcimageCorrect,scale,screen,OfftextX,OfftextY,complexity):
@@ -58,7 +77,8 @@ class TextShow():
 
 
         if self.showingButton:
-            if self.button.draw():
+            self.button.draw();
+            if self.button.ifPressed():
                 self.regenerateText()
         
     def setText(self,text):
@@ -95,39 +115,7 @@ class Image():
     def draw(self):
         self.screen.blit(self.imageNewCharBack,(self.imageNewCharrectBack.x, self.imageNewCharrectBack.y))
 
-class Button(Object):
-    def __init__(self,x,y, image,scale,screen):
-        super().__init__(x,y, image,scale,screen) 
-
-    def draw(self):
-        Object.draw(self);
-
-        #Get mouse position
-        pos = pygame.mouse.get_pos() 
-        if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and not self.pressed:
-            self.pressed = True
-        if pygame.mouse.get_pressed()[0] == 0:
-            self.pressed = False
-        return self.pressed
-
-class CheckButton(Object):
-    def __init__(self,x,y, image,scale,screen,groupText):
-        super().__init__(x,y, image,scale,screen) 
-
-        self.groupText = groupText
-    def draw(self,text):
-        Object.draw(self)
-
-        #Get mouse position
-        pos = pygame.mouse.get_pos() 
-        if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and not self.pressed:
-            self.groupText.showIfExist(text)
-            self.pressed = True
-        if pygame.mouse.get_pressed()[0] == 0:
-            self.pressed = False
-        return self.pressed
-
-class StartButton(Object):
+class CheckButton(BasicButton):
     def __init__(self,x,y, image,scale,screen,groupText):
         super().__init__(x,y, image,scale,screen) 
 
@@ -135,18 +123,21 @@ class StartButton(Object):
     def draw(self):
         Object.draw(self)
 
-        #Get mouse position
-        pos = pygame.mouse.get_pos() 
-        if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and not self.pressed:
-            
-            ## START THE GAME ## 
-            self.groupText.changeAllVisible(False)
-            self.pressed = True
-        if pygame.mouse.get_pressed()[0] == 0:
-            self.pressed = False
-        return self.pressed
+    def bActive(self,text):
+        self.groupText.showIfExist(text)
 
-class RerollButton(Object):
+class StartButton(BasicButton):
+    def __init__(self,x,y, image,scale,screen,groupText):
+        super().__init__(x,y, image,scale,screen) 
+
+        self.groupText = groupText
+    def draw(self):
+        Object.draw(self)
+
+    def bActive(self):
+        self.groupText.changeAllVisible(False)
+
+class RerollButton(BasicButton):
     
     def __init__(self,x,y, image,scale,screen,groupText,selComplexity):
         super().__init__(x,y, image,scale,screen) 
@@ -158,17 +149,8 @@ class RerollButton(Object):
         Object.draw(self)
         self.screen.blit(self.imageReal,(self.rect.x, self.rect.y))
         
-
-    def ifPressed(self):
-        pos = pygame.mouse.get_pos() 
-        if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and not self.pressed:
-            self.pressed = True
-        if pygame.mouse.get_pressed()[0] == 0:
-            self.pressed = False
-        return self.pressed
-
-    def reroll(self):
-      ## Restarts The game
+    def bActive(self):
+        ## Restarts The game
         self.groupText.reloadAll(self.selComplexity.getDifficulty())
         self.groupText.changeAllVisible(True)
 
