@@ -4,6 +4,21 @@ import pygame
 import random
 import os
 
+class Object():
+
+    def __init__(self,x,y, image,scale,screen):
+        self.imageReal = pygame.image.load(image).convert_alpha()
+        width = self.imageReal.get_width()
+        height = self.imageReal.get_height()
+        self.imageReal = pygame.transform.scale(self.imageReal,(int(width*scale),int(height*scale)))
+        self.rect = self.imageReal.get_rect()
+        self.rect.topleft = (x,y) 
+        self.pressed = False
+        self.screen = screen
+    
+    def draw(self):
+        self.screen.blit(self.imageReal,(self.rect.x, self.rect.y))
+
 
 class TextShow():
     def __init__(self,x,y, srcimageBkgrnd,srcimageDelete,srcimageCorrect,scale,screen,OfftextX,OfftextY,complexity):
@@ -80,42 +95,29 @@ class Image():
     def draw(self):
         self.screen.blit(self.imageNewCharBack,(self.imageNewCharrectBack.x, self.imageNewCharrectBack.y))
 
-class Button():
+class Button(Object):
     def __init__(self,x,y, image,scale,screen):
-        self.imageReal = pygame.image.load(image).convert_alpha()
-        width = self.imageReal.get_width()
-        height = self.imageReal.get_height()
-        self.imageReal = pygame.transform.scale(self.imageReal,(int(width*scale),int(height*scale)))
-        self.rect = self.imageReal.get_rect()
-        self.rect.topleft = (x,y) 
-        self.pressed = False
-        self.screen = screen
-        self.lastImages = []
+        super().__init__(x,y, image,scale,screen) 
 
     def draw(self):
+        Object.draw(self);
+
         #Get mouse position
         pos = pygame.mouse.get_pos() 
         if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and not self.pressed:
             self.pressed = True
         if pygame.mouse.get_pressed()[0] == 0:
             self.pressed = False
-        self.screen.blit(self.imageReal,(self.rect.x, self.rect.y))
         return self.pressed
 
-class CheckButton():
+class CheckButton(Object):
     def __init__(self,x,y, image,scale,screen,groupText):
-        self.imageReal = pygame.image.load(image).convert_alpha()
-        width = self.imageReal.get_width()
-        height = self.imageReal.get_height()
-        self.imageReal = pygame.transform.scale(self.imageReal,(int(width*scale),int(height*scale)))
-        self.rect = self.imageReal.get_rect()
-        self.rect.topleft = (x,y) 
-        self.pressed = False
-        self.screen = screen
-        self.lastImages = []
+        super().__init__(x,y, image,scale,screen) 
 
         self.groupText = groupText
     def draw(self,text):
+        Object.draw(self)
+
         #Get mouse position
         pos = pygame.mouse.get_pos() 
         if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and not self.pressed:
@@ -123,23 +125,16 @@ class CheckButton():
             self.pressed = True
         if pygame.mouse.get_pressed()[0] == 0:
             self.pressed = False
-        self.screen.blit(self.imageReal,(self.rect.x, self.rect.y))
         return self.pressed
 
-class StartButton():
+class StartButton(Object):
     def __init__(self,x,y, image,scale,screen,groupText):
-        self.imageReal = pygame.image.load(image).convert_alpha()
-        width = self.imageReal.get_width()
-        height = self.imageReal.get_height()
-        self.imageReal = pygame.transform.scale(self.imageReal,(int(width*scale),int(height*scale)))
-        self.rect = self.imageReal.get_rect()
-        self.rect.topleft = (x,y) 
-        self.pressed = False
-        self.screen = screen
-        self.lastImages = []
+        super().__init__(x,y, image,scale,screen) 
 
         self.groupText = groupText
     def draw(self):
+        Object.draw(self)
+
         #Get mouse position
         pos = pygame.mouse.get_pos() 
         if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and not self.pressed:
@@ -149,37 +144,33 @@ class StartButton():
             self.pressed = True
         if pygame.mouse.get_pressed()[0] == 0:
             self.pressed = False
-        self.screen.blit(self.imageReal,(self.rect.x, self.rect.y))
         return self.pressed
 
-class RerollButton():
+class RerollButton(Object):
     
     def __init__(self,x,y, image,scale,screen,groupText,selComplexity):
-        self.imageReal = pygame.image.load(image).convert_alpha()
-        width = self.imageReal.get_width()
-        height = self.imageReal.get_height()
-        self.imageReal = pygame.transform.scale(self.imageReal,(int(width*scale),int(height*scale)))
-        self.rect = self.imageReal.get_rect()
-        self.rect.topleft = (x,y) 
-        self.pressed = False
-        self.screen = screen
-        self.lastImages = []
-        self.selComplexity = selComplexity
-        
-        
+        super().__init__(x,y, image,scale,screen) 
+        self.selComplexity = selComplexity  
         self.groupText = groupText
+
     def draw(self):
         #Get mouse position
+        Object.draw(self)
+        self.screen.blit(self.imageReal,(self.rect.x, self.rect.y))
+        
+
+    def ifPressed(self):
         pos = pygame.mouse.get_pos() 
         if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and not self.pressed:
-            ## Restarts The game
-            self.groupText.reloadAll(self.selComplexity.getDifficulty())
-            self.groupText.changeAllVisible(True)
             self.pressed = True
         if pygame.mouse.get_pressed()[0] == 0:
             self.pressed = False
-        self.screen.blit(self.imageReal,(self.rect.x, self.rect.y))
         return self.pressed
+
+    def reroll(self):
+      ## Restarts The game
+        self.groupText.reloadAll(self.selComplexity.getDifficulty())
+        self.groupText.changeAllVisible(True)
 
 class GroupText():
 
@@ -234,8 +225,7 @@ class GroupText():
             if not found:
                 j = 0
                 i =  i + 1
-        
-
+    
     def changeVisible(self, posX, posY, newVisible):
         self.matText[posX][posY].changeVisibility(newVisible)
 
@@ -243,19 +233,15 @@ def getWord(complexity):
         word = random.choice(open('es.txt','r',encoding="utf-8").readlines())
         if '/' in word:
             head, sep, tail = word.partition('/')
-            print(head+ " " + sep + " " + tail )
         else:
             head = word[:len(word)-1]
-            print(head)
     
         while len(head) > complexity:
             word = random.choice(open('es.txt','r',encoding="utf-8").readlines())
             if '/' in word:
                 head, sep, tail = word.partition('/')
-                #print(head+ " " + sep + " " + tail )
             else:
                 head = word[:len(word)-1]
-                #print(head)
         return head
 
 class TimeCountDown():
@@ -282,29 +268,27 @@ class TimeCountDown():
 
     def setTime(self,time):
         self.Time = time
-class TextInput():
+class TextInput(Object):
 
     def __init__(self,x,y,srcimage,scale,screen):
-        self.imageChar = pygame.image.load(srcimage).convert_alpha()
-        self.imageNewChar = pygame.transform.scale(self.imageChar,(int(self.imageChar.get_width()*scale),int(self.imageChar.get_height()*scale)))
-        self.imageNewCharrect = self.imageNewChar.get_rect()
-        self.imageNewCharrect.topleft = (x,y) 
-        self.screen = screen
+        super().__init__(x,y, srcimage,scale,screen) 
         self.pressed = False
-    
-    def draw(self):
+        self.base_font = pygame.font.Font(None,40)
 
+    def draw(self, textToDraw):
+        Object.draw(self)
         #Get mouse position
         pos = pygame.mouse.get_pos() 
 
-        if self.imageNewCharrect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and not self.pressed:
+        if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and not self.pressed:
             self.pressed = True
-            print('Hola')
         
-        if pygame.mouse.get_pressed()[0] == 1 and not self.imageNewCharrect.collidepoint(pos):
+        if pygame.mouse.get_pressed()[0] == 1 and not self.rect.collidepoint(pos):
             self.pressed = False
         
-        self.screen.blit(self.imageNewChar,(self.imageNewCharrect.x, self.imageNewCharrect.y))
+        #Show text inputed;
+        text_surface2 = self.base_font.render(textToDraw,True,(0,0,0))
+        self.screen.blit(text_surface2,(65,545))
 
     def get_pressed(self):
         return self.pressed
@@ -321,25 +305,28 @@ class DifficultySlider():
         self.x = x
         self.y = y
         self.listPoints = [[-125,0], [-75,0],[-25,0],[+25,0],[+75,0],[+125,0]]
-    def draw(self):
+    def draw(self):        
+        self.ballNewCharrect.topleft = (self.listPoints[int(self.ballPos)][0] + self.x + -15, self.y - 16)
+        self.screen.blit(self.ballNewChar,(self.ballNewCharrect.x,self.ballNewCharrect.y))
+
+    def sliderAndChange(self):
         #Get mouse position
         pos = pygame.mouse.get_pos() 
-
+        hasChanged = False;
         if self.ballNewCharrect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
             self.pressed = True
 
         if self.pressed:
             if((self.listPoints[self.ballPos][0]+self.x - pygame.mouse.get_pos()[0]) > 25 and self.ballPos > 0):
                 self.ballPos  = self.ballPos - 1
+                hasChanged = True;
             elif((self.listPoints[self.ballPos][0]+self.x - pygame.mouse.get_pos()[0]) < -25 and self.ballPos < 5):
                 self.ballPos  = self.ballPos + 1
-        
+                hasChanged = True;
         if pygame.mouse.get_pressed()[0] == 0:
             self.pressed = False
-        
-        self.ballNewCharrect.topleft = (self.listPoints[int(self.ballPos)][0] + self.x + -15, self.y - 16)
-        self.screen.blit(self.ballNewChar,(self.ballNewCharrect.x,self.ballNewCharrect.y))
 
+        return hasChanged;
 
     def getDifficulty(self):
         return self.ballPos + 4

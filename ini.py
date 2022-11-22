@@ -27,7 +27,6 @@ inputText = objects.TextInput(55,535,currentPath+'/assets/EnterTxtAtri.png',5,sc
 RerollButton = objects.RerollButton(625, 340,currentPath+'/assets/RerollButton.png',SCALE,screen,wallText,sliderDiff)
 run = True
 
-base_font = pygame.font.Font(None,40)
 CLOCKDOWN = pygame.USEREVENT+1
 pygame.time.set_timer(CLOCKDOWN, 1000)
 
@@ -41,26 +40,19 @@ while run:
     sliderDiff.draw()
     wallText.draw()
     clockTimer.draw()
-    
-    if RerollButton.draw():
+    RerollButton.draw()
+    if RerollButton.ifPressed() or sliderDiff.sliderAndChange():
+        RerollButton.reroll();
         clockTimer.setTime(60)
         hasStarted = False
+        wordTextInput = ""
     if CheckButton.draw(wordTextInput):
         wordTextInput = ""
     if StartButton.draw():
         hasStarted = True
     
-    inputText.draw()
+    inputText.draw(wordTextInput)
     
-    #Show text inputed;
-    text_surface2 = base_font.render(wordTextInput,True,(0,0,0))
-    screen.blit(text_surface2,(65,545))
-
-    #for Test Purposes:
-    #if pygame.mouse.get_pressed()[0] == 1:
-    #    print(pygame.mouse.get_pos())
-
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -78,7 +70,6 @@ while run:
                 wallText.showIfExist(wordTextInput)
                 wordTextInput = ""
             elif event.key != 96:
-                print(event.key)
                 wordTextInput += event.unicode
     pygame.display.update()
 
