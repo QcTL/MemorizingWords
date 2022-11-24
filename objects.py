@@ -30,14 +30,8 @@ class BasicButton(Object):
         if pygame.mouse.get_pressed()[0] == 0:
             self.pressed = False
         return self.pressed
-
-class Button(BasicButton):
-    def __init__(self,x,y, image,scale,screen):
-        super().__init__(x,y, image,scale,screen) 
-
     def draw(self):
         Object.draw(self);
-
 
 class TextShow():
     def __init__(self,x,y, srcimageBkgrnd,srcimageDelete,srcimageCorrect,scale,screen,OfftextX,OfftextY,complexity):
@@ -49,7 +43,7 @@ class TextShow():
         self.imageNewCharrectBack.topleft = (x,y) 
         self.TextVisible = True
         #Button:
-        self.button = Button(x-35,y+9,srcimageDelete,scale,screen)
+        self.button = BasicButton(x-35,y+9,srcimageDelete,scale,screen)
         self.showingButton = True
         #Correct
         self.CorCharBack = pygame.image.load(srcimageCorrect).convert_alpha()
@@ -259,6 +253,12 @@ class TextInput(Object):
 
     def draw(self, textToDraw):
         Object.draw(self)
+        
+        #Show text inputed;
+        text_surface2 = self.base_font.render(textToDraw,True,(0,0,0))
+        self.screen.blit(text_surface2,(65,545))
+
+    def get_pressed(self):
         #Get mouse position
         pos = pygame.mouse.get_pos() 
 
@@ -267,12 +267,6 @@ class TextInput(Object):
         
         if pygame.mouse.get_pressed()[0] == 1 and not self.rect.collidepoint(pos):
             self.pressed = False
-        
-        #Show text inputed;
-        text_surface2 = self.base_font.render(textToDraw,True,(0,0,0))
-        self.screen.blit(text_surface2,(65,545))
-
-    def get_pressed(self):
         return self.pressed
 
 class DifficultySlider():
