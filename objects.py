@@ -201,6 +201,7 @@ class GroupText():
             if not found:
                 j = 0
                 i =  i + 1
+        return found
     
     def changeVisible(self, posX, posY, newVisible):
         self.matText[posX][posY].changeVisibility(newVisible)
@@ -313,3 +314,40 @@ class DifficultySlider():
 
     def getDifficulty(self):
         return self.ballPos + 4
+
+class ScoreVisual(Object):
+    def __init__(self,x,y, image,scale,screen):
+        super().__init__(x,y,image,scale,screen)
+        self.base_font = pygame.font.Font(None,60)
+        self.listEffectDisplay = []
+        self.x = x
+        self.y = y
+    def draw(self,score):
+        Object.draw(self)
+
+        ##Show Input:
+        text_surface = self.base_font.render(str(score),True,(0,0,0))
+        self.newX = self.x+self.rect.width/2-10
+        self.newY = self.y+self.rect.height/2-18
+        self.screen.blit(text_surface,(self.newX,self.newY))
+        for effect in self.listEffectDisplay:
+            effect.draw()
+
+    def newPointGained(self):
+        self.listEffectDisplay.append(EffectAddPoint(self.newX,self.newY-10,1,self.screen,"+1"))
+
+class EffectAddPoint():
+    def __init__(self,x,y,scale,screen,value):
+        self.x = x
+        self.y = y
+        self.screen = screen
+        self.value = value
+        self.base_font = pygame.font.Font(None,50)
+        self.listEffectDisplay = []
+        self.initialValue = 255
+    def draw(self):
+        text_surface = self.base_font.render(self.value,True,(0,200,0))
+        text_surface.set_alpha(self.initialValue)
+        self.screen.blit(text_surface,(self.x,self.y))
+        self.y = self.y - 0.7
+        self.initialValue = self.initialValue - 4

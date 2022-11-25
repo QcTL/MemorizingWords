@@ -25,6 +25,8 @@ sliderDiff = objects.DifficultySlider(200,366,currentPath+'/assets/BallSelect.pn
 inputText = objects.TextInput(55,535,currentPath+'/assets/EnterTxtAtri.png',5,screen)
 
 RerollButton = objects.RerollButton(625, 340,currentPath+'/assets/RerollButton.png',SCALE,screen,wallText,sliderDiff)
+ScoreVisual = objects.ScoreVisual(690,500,currentPath+'/assets/ScoreDisp.png',SCALE,screen)
+
 run = True
 
 CLOCKDOWN = pygame.USEREVENT+1
@@ -32,6 +34,8 @@ pygame.time.set_timer(CLOCKDOWN, 1000)
 
 wordTextInput = ''
 hasStarted = False
+
+score = 0
 
 while run:
     backGround.draw()
@@ -44,12 +48,14 @@ while run:
     CheckButton.draw()
     StartButton.draw()
     StartButton.draw()
+    ScoreVisual.draw(score)
 
     if RerollButton.ifPressed() or sliderDiff.sliderAndChange():
         RerollButton.bActive();
         clockTimer.setTime(60)
         hasStarted = False
         wordTextInput = ""
+        score = 0
     if CheckButton.ifPressed():
         CheckButton.bActive(wordTextInput)
         wordTextInput = ""
@@ -73,7 +79,11 @@ while run:
                 wordTextInput = wordTextInput[0:-1]
             elif event.key == pygame.K_SPACE or event.key == 13:
                 ##Summit by enter
-                wallText.showIfExist(wordTextInput)
+                found = False
+                found = wallText.showIfExist(wordTextInput)
+                if found == True:
+                    score = score + 1
+                    ScoreVisual.newPointGained()
                 wordTextInput = ""
             elif event.key != 96:
                 wordTextInput += event.unicode
